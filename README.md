@@ -57,39 +57,13 @@ User Request (complex/ambiguous)
 
 ### Step-by-Step Setup
 
-#### 1. Clone this repo
+#### 1. Download Skills set-up
 
-```bash
-git clone https://github.com/AdrianAmZa/lansweeper-po-skills.git
-```
-
-#### 2. Create a Claude Project
-
-1. Go to [claude.ai](https://claude.ai)
-2. Click **"Projects"** in the left sidebar
-3. Click **"Create Project"**
-4. Name it something like: `Lansweeper PO Assistant`
-
-#### 3. Upload the skills
-
-In your project, go to **Project Knowledge** and upload each `SKILL.md` file from the `skills/` folder:
-
-```
-skills/orchestrator-po/SKILL.md
-skills/jira-ticket-creator/SKILL.md
-skills/sprint-planner/SKILL.md
-skills/stakeholder-communicator/SKILL.md
-skills/test-plan-creator/SKILL.md
-skills/technical-writer/SKILL.md
-skills/jira-researcher/SKILL.md
-skills/confluence-researcher/SKILL.md
-skills/slack-researcher/SKILL.md
-skills/figma-researcher/SKILL.md
-```
+#### 2. Upload the skills
 
 > **Tip:** You can drag-and-drop all 10 files at once into the Project Knowledge panel.
 
-#### 4. Enable MCP Integrations
+#### 3. Enable MCP Integrations
 
 Make sure these integrations are connected in your Claude account (Settings → Integrations):
 
@@ -122,25 +96,6 @@ Open a new conversation inside the project and try:
 
 ---
 
-## 📁 Repository Structure
-
-```
-lansweeper-po-skills/
-├── README.md                          # This file
-├── CHANGELOG.md                       # Version history
-├── skills/
-│   ├── orchestrator-po/SKILL.md       # Meta-orchestrator
-│   ├── jira-ticket-creator/SKILL.md   # Jira issue creation
-│   ├── sprint-planner/SKILL.md        # Sprint planning
-│   ├── stakeholder-communicator/SKILL.md
-│   ├── test-plan-creator/SKILL.md
-│   ├── technical-writer/SKILL.md
-│   ├── jira-researcher/SKILL.md       # Jira search/retrieval
-│   ├── confluence-researcher/SKILL.md
-│   ├── slack-researcher/SKILL.md
-│   └── figma-researcher/SKILL.md
-```
-
 ## 🔄 Updating Skills
 
 When skills are updated in this repo:
@@ -158,13 +113,6 @@ When skills are updated in this repo:
 - **Jira project specifics** (project key, cloud ID, account IDs) should be set in your Project Instructions, not hardcoded in skills.
 - **Skills work best together** — the orchestrator routes to specialized skills, so uploading all of them gives you the full experience.
 - **MCP connectors must be enabled per-user** — each team member needs their own Atlassian/Slack/Figma connections configured.
-
-## 📋 Permissions
-
-| User | Role | Access |
-|---|---|---|
-| Adrian (AdrianAmZa) | Owner / Editor | Full read/write access |
-| Selene Recio | Collaborator | Read-only access |
 
 ## 📄 License
 
