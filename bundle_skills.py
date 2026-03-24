@@ -31,7 +31,7 @@ EXCLUDE_FILES = {".DS_Store", ".gitignore"}
 ROOT_EXCLUDE_DIRS = {"evals"}
 
 
-def should_exclude(rel_path: Path) -> bool:
+def should_exclude(rel_path):
     parts = rel_path.parts
     if any(part in EXCLUDE_DIRS for part in parts):
         return True
@@ -44,7 +44,7 @@ def should_exclude(rel_path: Path) -> bool:
 
 
 # ── Validation (inline, no external deps) ────────────────────────────────────
-def validate_skill(skill_path: Path) -> tuple[bool, str, dict]:
+def validate_skill(skill_path):
     """Validate a skill folder. Returns (valid, message, metadata)."""
     skill_md = skill_path / "SKILL.md"
     if not skill_md.exists():
@@ -77,7 +77,7 @@ def validate_skill(skill_path: Path) -> tuple[bool, str, dict]:
 
 
 # ── Package a single skill ────────────────────────────────────────────────────
-def package_skill(skill_path: Path, output_dir: Path) -> Path | None:
+def package_skill(skill_path, output_dir):
     """Package one skill folder into a .skill (ZIP) file."""
     valid, msg, meta = validate_skill(skill_path)
     if not valid:
@@ -102,7 +102,7 @@ def package_skill(skill_path: Path, output_dir: Path) -> Path | None:
 
 
 # ── Build the full bundle ─────────────────────────────────────────────────────
-def build_bundle(skills_dir: Path, output_dir: Path, version: str):
+def build_bundle(skills_dir, output_dir, version):
     """Package all skills + create a combined bundle ZIP."""
     output_dir.mkdir(parents=True, exist_ok=True)
     individual_dir = output_dir / "individual"
@@ -120,8 +120,8 @@ def build_bundle(skills_dir: Path, output_dir: Path, version: str):
     print(f"📦 Found {len(skill_folders)} skills in {skills_dir}\n")
 
     # Package each skill individually
-    packaged: list[Path] = []
-    manifest_entries: list[dict] = []
+    packaged = []
+    manifest_entries = []
 
     for folder in skill_folders:
         result = package_skill(folder, individual_dir)
