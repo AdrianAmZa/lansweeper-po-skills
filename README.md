@@ -46,7 +46,7 @@ Then point Claude to the `skills/` directory.
 | Research | `confluence-researcher` | Navigate Confluence pages, spaces, and hierarchies |
 | Research | `slack-researcher` | Search Slack channels, threads, and messages |
 | Research | `figma-researcher` | Extract design context from Figma files via MCP |
-| Execution | `jira-ticket-creator` | Create structured Jira issues (Epic/Story/Task/Bug) with full templates |
+| Execution | `jira-ticket-creator` | Create structured Jira issues (Outcome/Milestone/Epic/Story/Task/Bug/Vulnerability) with full templates |
 | Execution | `sprint-planner` | Sprint planning, capacity, velocity, and backlog grooming |
 | Execution | `stakeholder-communicator` | Status reports, release notes, executive summaries |
 | Output | `test-plan-creator` | Structured Jira Test Plans with the Lansweeper template |
