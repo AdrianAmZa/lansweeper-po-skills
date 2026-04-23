@@ -1,6 +1,6 @@
 ---
 name: jira-ticket-creator
-description: "Product Owner skill for creating structured Jira issues following strict templates. Covers Epics, Stories, Tasks, Bugs, and Vulnerabilities with a 5-step workflow (gather inputs, generate preview, estimate story points, confirm creation, final summary). Includes complete templates with metadata, acceptance criteria, QA strategy, and AI analysis notes."
+description: "Product Owner skill for creating structured Jira issues following strict templates. Covers Outcomes, Milestones, Epics, Stories, Tasks, Bugs, and Vulnerabilities with a 5-step workflow (gather inputs, generate preview, estimate story points, confirm creation, final summary). Includes complete templates with metadata, acceptance criteria, QA strategy, and AI analysis notes."
 ---
 
 # 🎫 Jira Ticket Creator
@@ -31,6 +31,8 @@ Activate this skill when the user:
 5. **Link references** — If the user provides a Figma or Jira link, reference it explicitly in the relevant template section
 6. **Post-creation link** — After Jira creation, always provide the direct issue link
 7. **Tone** — Adopt the tone of a senior, pragmatic PO — constructive, precise, and collaborative
+8. **Feature Flags — never auto-fill** — The Feature Flag section must always appear in the template but must be left empty (headers only, no data rows). Feature flag names are defined by engineering during implementation, not during ticket creation. **Exception for Pendo stories:** In the Pendo FAC section, always include a row for "Feature flag is OFF → no events fire" as an acceptance criterion — this references the feature flag conceptually but does not pre-fill the Feature Flag metadata table.
+9. **Pendo Tracking — conditional inclusion** — When the issue involves UI changes, new user-facing features, user flows, or any functionality that produces measurable user interactions, include the Pendo Tracking section. The PO is responsible for defining which track events apply by consulting the [PLG Instrumentation Plan](https://lansweeper.atlassian.net/wiki/spaces/PROD/pages/5518229668). Use the **full Pendo format** for stories dedicated to Pendo instrumentation (see ACME-50950 as reference); use the **light Pendo format** for functional stories/tasks that include tracking as part of the development. If the `pendo-tracker` skill is available, invoke it to assist with determining and populating the Pendo tracking requirements.
 
 ---
 
@@ -41,7 +43,7 @@ Activate this skill when the user:
 Ask the user for:
 
 - **Summary** — a brief description of what the issue is about
-- **Issue type** — Epic / Story / Task / Bug / Vulnerability
+- **Issue type** — Outcome / Milestone / Epic / Story / Task / Bug / Vulnerability
 - **Relevant links** — Figma, Jira, other apps, images, or files (optional but encouraged)
 
 **Do not proceed** until you have at least the summary and issue type.
@@ -130,12 +132,31 @@ Before presenting a preview to the user, run this checklist internally. The goal
 - [ ] AI Analysis Notes section is populated with genuine assumptions, not boilerplate
 - [ ] No contradictions between sections (e.g., "Out of Scope" items that appear in AC)
 
+**Pendo tracking (when section is included):**
+- [ ] Every track event listed references a specific event from the [PLG Instrumentation Plan](https://lansweeper.atlassian.net/wiki/spaces/PROD/pages/5518229668) — no invented event names
+- [ ] Metadata fields match the Confluence spec for each event — not a subset or superset
+- [ ] For full-format stories: each PFAC row has a testable Given/When/Then with the exact event name and metadata fields
+- [ ] UI element IDs follow the `#bh_` or `data-pendo-id` naming convention
+
 **Stories specifically:**
 - [ ] User Statement follows "As a / I want / so that" — and the "so that" describes real user value, not just "so that the feature works"
 - [ ] Each FAC row has a concrete, testable Given/When/Then — not vague conditions like "given the user is logged in"
 - [ ] TAC items have a Rationale column filled — not just the requirement restated
 - [ ] Edge cases in QA section go beyond the happy path — at least 2 non-obvious edge cases
 - [ ] Out of Scope section exists and has at least 1 item (scope clarity is always valuable)
+
+**Outcomes specifically:**
+- [ ] Outcome Overview reads as pure product narrative — no technical terms, no task language, understandable by anyone in the company
+- [ ] Success Criteria are business-level results, not delivery milestones (e.g. "customers can do X" not "Epic Y is done")
+- [ ] Every Milestone in the table contributes directly and visibly to the Outcome goal
+- [ ] AI Analysis Notes includes at least 1 open question for leadership or the PO to resolve
+
+**Milestones specifically:**
+- [ ] Milestone Overview reads as a product narrative, not a task list — no technical jargon
+- [ ] Success Criteria are observable product outcomes, not "Epic X is done"
+- [ ] Every Epic in the Epics in Scope table contributes directly to the Milestone goal
+- [ ] Out of Scope has at least 1 item — always valuable for stakeholder alignment
+- [ ] AI Analysis Notes includes at least 1 open question for the PO to resolve
 
 **Epics specifically:**
 - [ ] Success Criteria are measurable with a concrete target value — not "users are happy"
@@ -162,6 +183,154 @@ If confidence is High after pass 1, skip pass 2 and present. The goal is quality
 ---
 
 ## TEMPLATES
+
+### 🎯 OUTCOME TEMPLATE
+
+#### Outcome Overview
+
+_One paragraph (3–5 sentences) describing the strategic change this Outcome represents. What shifts for the business or for users when this Outcome is achieved? Write it as a product narrative — no technical language, no task lists. This should be readable by anyone in the company._
+
+---
+
+#### Strategic Context
+
+**Why this Outcome matters:**
+_Explain the business rationale in plain language. What problem does it solve? What opportunity does it unlock? Why is this the right thing to focus on now?_
+
+**Who benefits:**
+_Describe the primary user segment, persona, or business stakeholder that gains value when this Outcome is achieved._
+
+---
+
+#### Milestones in Scope
+
+_These are the Milestones that, together, deliver this Outcome. Each Milestone should represent a meaningful, observable step toward the Outcome goal._
+
+| Milestone Key | Milestone Name | Status | Target Date |
+|---|---|---|---|
+| ACME-XXXXX | [Milestone 1 Name] | New / In Progress / Achieved | YYYY-MM-DD |
+| ACME-XXXXX | [Milestone 2 Name] | New / In Progress / Achieved | YYYY-MM-DD |
+| ACME-XXXXX | [Milestone 3 Name] | New / In Progress / Achieved | YYYY-MM-DD |
+
+---
+
+#### Success Criteria
+
+_How do we know this Outcome has been achieved? These should be observable, business-level results — not delivery checkboxes._
+
+| ID | Criterion | How We Measure It | Target |
+|---|---|---|---|
+| SC-1 | [Business or user outcome that is observable] | [Metric, signal, or observable evidence] | [Specific threshold or condition] |
+| SC-2 | [Outcome] | [How to measure] | [Target] |
+| SC-3 | [Outcome] | [How to measure] | [Target] |
+
+---
+
+#### Dependencies & Risks
+
+_Strategic-level blockers or risks that could prevent this Outcome from being achieved._
+
+| Item | Type | Status | Notes |
+|---|---|---|---|
+| [Team / Initiative / External factor] | Dependency / Risk | Confirmed / At Risk | [Impact if unresolved] |
+| [Item 2] | Dependency / Risk | Confirmed / At Risk | [Notes] |
+
+---
+
+#### AI Analysis Notes
+
+_Auto-filled during ticket creation — review and adjust as needed._
+
+- **Assumptions made**: [What was inferred about scope, strategic intent, or ownership]
+- **Open questions**: [What the PO or leadership should clarify before committing this Outcome]
+- **Suggested refinements**: [Any gaps in Success Criteria or Milestone coverage]
+
+---
+
+### 🏁 MILESTONE TEMPLATE
+
+#### Milestone Overview
+
+_One paragraph (3–5 sentences) describing what this Milestone represents from a product perspective: what strategic objective it achieves, why it matters to the business, and what users will experience once it's complete._
+
+---
+
+#### Strategic Context
+
+**Why this Milestone matters:**
+_Explain the business rationale in plain language. What gap does it close? What opportunity does it unlock? Avoid technical jargon — this should be understandable by Sales, CS, or Leadership._
+
+**Who benefits:**
+_Describe the primary user segment or persona that gains value when this Milestone is achieved._
+
+---
+
+#### Epics in Scope
+
+_These are the Epics that, collectively, deliver this Milestone. Each Epic should contribute directly to the Milestone goal._
+
+| Epic Key | Epic Name | Status | Target Date | Owner |
+|---|---|---|---|---|
+| ACME-XXXXX | [Epic 1 Name] | In Progress | YYYY-MM-DD | @name |
+| ACME-XXXXX | [Epic 2 Name] | Not Started | YYYY-MM-DD | @name |
+| ACME-XXXXX | [Epic 3 Name] | Not Started | YYYY-MM-DD | @name |
+
+---
+
+#### Success Criteria
+
+_How do we know this Milestone has been achieved? Define clear, observable outcomes — not tasks completed._
+
+| ID | Criterion | How We Measure It | Target |
+|---|---|---|---|
+| SC-1 | [Product outcome users or the business can observe] | [Metric, tool, or observable sign] | [Specific threshold] |
+| SC-2 | [Product outcome] | [How to measure] | [Target] |
+| SC-3 | [Product outcome] | [How to measure] | [Target] |
+
+---
+
+#### Out of Scope
+
+_Explicitly state what this Milestone does NOT cover, to avoid scope creep and set stakeholder expectations._
+
+- [Item 1 — what it is, and why it belongs to a different Milestone or is deferred]
+- [Item 2 — related capability that is explicitly excluded]
+
+---
+
+#### Dependencies & Risks
+
+| Item | Type | Status | Notes |
+|---|---|---|---|
+| [Team / Epic / External party] | Dependency / Risk | Confirmed / At Risk | [Impact if delayed or unresolved] |
+| [Item 2] | Dependency / Risk | Confirmed / At Risk | [Notes] |
+
+---
+
+#### AI Analysis Notes
+
+_Auto-filled during ticket creation — review and adjust as needed._
+
+- **Assumptions made**: [What was inferred about scope, ownership, or timing]
+- **Open questions**: [What the PO should clarify before committing this Milestone]
+- **Suggested refinements**: [Any gaps in Success Criteria or Epic coverage]
+
+---
+
+#### Metadata
+
+| Field | Value |
+|---|---|
+| **Milestone ID** | ACME-XXXXX |
+| **Milestone Name** | [Clear, outcome-oriented name] |
+| **Outcome** | ACME-XXXXX — [Parent Outcome Name] |
+| **Status** | Draft / In Progress / Achieved / Cancelled |
+| **Priority** | Critical / High / Medium / Low |
+| **Product Owner** | @name |
+| **Target Date** | YYYY-MM-DD |
+| **Labels** | [label1, label2] |
+
+---
 
 ### 🗂️ EPIC TEMPLATE
 
@@ -196,7 +365,7 @@ _Provide a 3–5 sentence description that covers:_
 
 | Flag Name | Environment | Default | Description |
 |---|---|---|---|
-| `ff_epic_name` | Dev / Staging / Prod | OFF | Controls visibility of [feature] |
+| | | | |
 
 #### Success Criteria
 
@@ -280,6 +449,20 @@ _Provide a 3–5 sentence description that covers:_
 | [Metric 1] | [Analytics tool] | `event_name` | [What it tracks] |
 | [Metric 2] | [Analytics tool] | `event_name` | [What it tracks] |
 
+#### Pendo Tracking (if applicable)
+
+_Include this section when the epic involves UI changes, new features, or user flows that need analytics instrumentation. Reference the [PLG Instrumentation Plan](https://lansweeper.atlassian.net/wiki/spaces/PROD/pages/5518229668) for the full event catalog and the [Pendo Development Guide](https://lansweeper.atlassian.net/wiki/spaces/Pendo/pages/4482203802) for technical implementation details._
+
+**Track Events in Scope:**
+
+| Track Event Name | PLG Stage | Trigger Condition | Metadata Required | Priority |
+|---|---|---|---|---|
+| `event_name` | Onboarding / Adoption / Engagement / Retention / Expansion | [When this event fires] | [Key metadata fields] | HIGH / MEDIUM / LOW |
+
+**Instrumentation approach:** [Dedicated Pendo stories per event / Embedded in feature stories / Mixed]
+
+**UI element IDs required:** [List any new `data-pendo-id` or `#bh_` IDs that need to be added for Pendo feature tagging]
+
 #### Timeline & Milestones
 
 | Milestone | Target Date | Status | Notes |
@@ -338,7 +521,7 @@ _Provide a 2–3 sentence elaboration of the user need, context, and expected be
 
 | Flag Name | Environment | Default | Description |
 |---|---|---|---|
-| `ff_feature_name` | Dev / Staging / Prod | OFF | Controls [feature aspect] |
+| | | | |
 
 #### Functional Acceptance Criteria (FAC)
 
@@ -406,6 +589,43 @@ _Provide a 2–3 sentence elaboration of the user need, context, and expected be
 |---|---|---|---|
 | [Metric 1] | [Analytics tool] | `event_name` | [What it tracks] |
 
+#### Pendo Tracking (if applicable)
+
+_Include this section when the story involves user interactions that need to be tracked in Pendo. Choose the appropriate format based on the story type._
+
+**LIGHT FORMAT** — _Use when Pendo tracking is part of a functional story (the story delivers a feature AND includes tracking):_
+
+| Track Event Name | PLG Stage | Trigger | Key Metadata | Confluence Ref |
+|---|---|---|---|---|
+| `event_name` | [Stage] | [When this event fires] | [Comma-separated key fields] | [Link to PLG Instrumentation Plan section] |
+
+**UI element requirements:** [Any `data-pendo-id` or `#bh_` IDs to add — e.g., `data-pendo-id="save-scope-btn"`]
+
+---
+
+**FULL FORMAT** — _Use when this is a dedicated Pendo instrumentation story (the story's sole purpose is implementing track events). Follow the structure from [ACME-50950](https://lansweeper.atlassian.net/browse/ACME-50950):_
+
+**Confluence Source:** [Link to PLG Instrumentation Plan section]
+
+**Pendo FAC (Functional Acceptance Criteria):**
+
+| ID | Given | When | Then |
+|---|---|---|---|
+| PFAC-1 | [Precondition — user state] | [User action that triggers the event] | `track_event_name` fires with: `field1`, `field2`, `field3`, `timestamp` |
+| PFAC-2 | Feature flag is OFF | Any of the above actions occur | No track events fire |
+
+**Pendo TAC (Technical Acceptance Criteria):**
+
+| ID | Requirement | Rationale |
+|---|---|---|
+| PTAC-1 | [Technical requirement for event implementation] | [Why this matters for data quality] |
+
+**Pendo QA Edge Cases:**
+- [Edge case 1 — e.g., event fires multiple times in same session]
+- [Edge case 2 — e.g., null/missing metadata handling]
+
+---
+
 #### AI Analysis Notes
 
 - **Assumptions made**: [List any inferences]
@@ -449,7 +669,7 @@ _Describe the task clearly: what needs to be done, why it's necessary, and what 
 
 | Flag Name | Environment | Default | Description |
 |---|---|---|---|
-| `ff_task_name` | Dev / Staging / Prod | OFF | [If applicable] |
+| | | | |
 
 #### Definition of Done
 
@@ -497,6 +717,16 @@ _Additional technical notes, links to documentation, reference implementations, 
 
 - [Note 1]
 - [Note 2]
+
+#### Pendo Tracking (if applicable)
+
+_Include when the task involves UI changes or configuration that affects Pendo instrumentation._
+
+| Track Event Name | PLG Stage | Trigger | Key Metadata | Confluence Ref |
+|---|---|---|---|---|
+| `event_name` | [Stage] | [When this event fires] | [Comma-separated key fields] | [Link to PLG Instrumentation Plan section] |
+
+**UI element requirements:** [Any `data-pendo-id` or `#bh_` IDs to add]
 
 #### AI Analysis Notes
 
